@@ -1,0 +1,13 @@
+image: docker
+
+stages:
+  - deploy
+
+build-test:
+  stage: deploy
+  image: openshift/origin-ansible
+  script:
+    - ls -la
+    - ansible-playbook -v ansible/deploy_kube_raw.yaml -e replicas=3
+  tags:
+    - docker

@@ -1,0 +1,30 @@
+- hosts: localhost
+  vars:
+    replicas: '{{ replicas }}'
+
+  tasks:
+
+    - name: Process k8s template
+      template:
+        src: ../k8s/deployment.yaml
+        dest: ./templates/deployment.yaml
+      tags:
+        - always
+
+    # Create an ingress resource from a YAML file.
+    - name: Create a kubernetes ingress
+      k8s:
+        kubeconfig: config.json
+        src: ../k8s/ingress.yaml
+        namespace: default
+        state: present
+
+    # Create a webservice deployment resource from a YAML file.
+    - name: Create a kubernetes deployment
+      k8s:
+        kubeconfig: config.json
+        src: ./templates/deployment.yaml
+        namespace: default
+        state: present
+
+

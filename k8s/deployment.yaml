@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-webserver-deployment
+spec:
+  replicas: {{ replicas }}
+  selector:
+    matchLabels:
+      app: go-webserver
+  template:
+    metadata:
+      labels:
+        app: go-webserver
+    spec:
+
+      volumes:
+        - name: config
+          configMap:
+            name: nginx-config
+            items:
+              - key: config
+                path: site.conf
+        - name: shared-data
+          emptyDir: {}
+
+      containers:
+        - name: nginx
+          image: nginx:1.7.9
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/conf.d
+            - name: shared-data
+              mountPath: /usr/share/nginx/html
+        - name: webserver
+          image: esboych/go-webserver:0.2
+          command: ["/bin/sh","-c"]
+          args: ["mkdir /static; cp /go/src/app/index.html /static; app"]
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: shared-data
+              mountPath: /static

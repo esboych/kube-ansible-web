@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: echo-ingress
+spec:
+  rules:
+    - host: uploader.example.com
+      http:
+        paths:
+          - backend:
+              serviceName: go-webservice
+              servicePort: 80
